@@ -16,7 +16,7 @@ public class WindDataController {
     }
     @GetMapping
     public List<WindDataPoint> getWindData(@RequestParam String startTime, @RequestParam String endTime,
-                                           @RequestParam(defaultValue = 4) int forecastHorizonHours) {
+                                           @RequestParam(defaultValue = "4") int forecastHorizonHours) {
         return windService.getCombinedWindData(startTime, endTime, forecastHorizonHours);
     }
 }
