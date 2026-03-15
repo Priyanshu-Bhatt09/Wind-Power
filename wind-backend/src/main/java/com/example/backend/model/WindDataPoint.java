@@ -13,4 +13,8 @@ public class WindDataPoint {
         this.forecastGeneration = forecastGeneration;
         this.timestamp = timestamp;
     }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
 }
