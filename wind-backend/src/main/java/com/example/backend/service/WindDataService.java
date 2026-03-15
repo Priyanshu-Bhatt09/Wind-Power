@@ -26,17 +26,20 @@ public class WindDataService {
 
         //fetch elexon actual data generation
         String actualUri = UriComponentsBuilder.fromUriString(ACTUAL_URL)
-                .queryParam("settelmentDateFrom", startTime)
-                .queryParam("settelmentDateTo", endTime)
+                .queryParam("settlementDateFrom", startTime)
+                .queryParam("settlementDateTo", endTime)
                 .queryParam("FuelType", "WIND")
                 .toUriString();
 
         ResponseEntity<ElexonActualDto[]> actualResponse = restTemplate.getForEntity(actualUri, ElexonActualDto[].class);
         ElexonActualDto[] actualData = actualResponse.getBody();
 
+        //parse the frontend string into a date, then sub 2 days
+        java.time.LocalDate startTarget = java.time.LocalDate.parse(startTime);
+        java.time.LocalDate adjustedPublishStart = startTarget.minusDays(2);
         //fetch forecast data
         String forecastUri = UriComponentsBuilder.fromUriString(FORECAST_URL)
-                .queryParam("publishDateTimeFrom", startTime + "T00:00:00Z")
+                .queryParam("publishDateTimeFrom", adjustedPublishStart.toString() + "T00:00:00Z")
                 .queryParam("publishDateTimeTo", endTime + "T23:59:59Z")
                 .toUriString();
 
@@ -44,45 +47,43 @@ public class WindDataService {
         ElexonForcastDto[] forecastData = forecastResponse.getBody();
 
         //converting actual data array to a map for fast lookups(Key: starttime, value: generation)
-        Map<String, Integer> actualsMap = Arrays.stream(actualData)
+        Map<Instant, Integer> actualsMap = Arrays.stream(actualData)
                 .collect(Collectors.toMap(
-                        ElexonActualDto::startTime,
+                        a -> Instant.parse(a.startTime()),
                         ElexonActualDto::generation,
-                        (existing, replacement) -> existing //if there are duplicates, keep the first
+                        (existing, replacement) -> existing
                 ));
 
-        //filter and find the best forecast for each target time
-        Map<String , ElexonForcastDto> latestForecastMap = Arrays.stream(forecastData)
+//        Filter and map the Forecast Data using Instant
+        Map<Instant, ElexonForcastDto> latestForecastMap = Arrays.stream(forecastData)
                 .filter(forecast -> {
                     Instant publishTime = Instant.parse(forecast.publishTime());
                     Instant targetTime = Instant.parse(forecast.startTime());
                     long horizonHours = Duration.between(publishTime, targetTime).toHours();
 
-                    //horizon must be <= 48 and >= the user's slider value
                     return horizonHours >= forecastHorizonHours && horizonHours <= 48;
                 })
                 .collect(Collectors.toMap(
-                        ElexonForcastDto::startTime,
+                        f -> Instant.parse(f.startTime()),
                         forecast -> forecast,
                         (f1, f2) -> {
-                            //if mul forecast exist for the same target time, pick the one with the Latest publish time
                             Instant p1 = Instant.parse(f1.publishTime());
                             Instant p2 = Instant.parse(f2.publishTime());
                             return p1.isAfter(p2) ? f1 : f2;
                         }
                 ));
 
-        //merge actual and forecast together into our final response object
+        // Merge them together! Because both maps use 'Instant', they will match perfectly.
         List<WindDataPoint> combinedData = actualsMap.entrySet().stream()
                 .map(entry -> {
-                    String targetTime = entry.getKey();
+                    Instant targetTime = entry.getKey();
                     Integer actualGen = entry.getValue();
 
-                    //look up the corresponding forecast, if it dosen't exists it remains null
                     ElexonForcastDto matchedForecast = latestForecastMap.get(targetTime);
                     Integer forecastGen = (matchedForecast != null) ? matchedForecast.generation() : null;
 
-                    return new WindDataPoint(targetTime, actualGen, forecastGen);
+                    // Convert the Instant back to a String so React can read it
+                    return new WindDataPoint(targetTime.toString(), actualGen, forecastGen);
                 })
                 .sorted(Comparator.comparing(WindDataPoint::getTimestamp))
                 .collect(Collectors.toList());

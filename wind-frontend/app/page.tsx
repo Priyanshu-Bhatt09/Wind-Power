@@ -1,65 +1,125 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+import { useEffect, useState } from "react";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+
+export default function WindForecastDashboard() {
+  const [startTime, setStartTime] = useState('2024-01-01');
+  const [endTime, setEndTime] = useState('2024-01-02');
+  const [horizonHours, setHorizonHours] = useState(4);
+  const [windData, setWindData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  //fetch data
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try{
+        const response = await fetch(`http://localhost:8080/api/wind-data?startTime=${startTime}&endTime=${endTime}&forecastHorizonHours=${horizonHours}`);
+        const data = await response.json();
+        console.log("Data", data);
+
+        //format time stamp
+        const formattedData = data.map((item: any) => ({
+          ...item,
+          displayTime: new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric', timeZone: 'UTC'})
+        }));
+
+        setWindData(formattedData);
+      } catch(error) {
+        console.log("Failed to fetch wind data", error);
+      }
+      setLoading(false);
+      
+    };
+    fetchData();
+    
+  }, [startTime, endTime, horizonHours]);
+
+  return(
+    <>
+    <div className="min-h-screen bg-white p-8 font-sans">
+      {/* top controls  */}
+      <div>
+        {/* start time  */}
+        <div>
+          <label>Start Time:</label>
+          <input type="date"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* end time  */}
+        <div>
+          <label>End Time:</label>
+          <input type="date"
+          value={endTime} 
+          onChange={(e) => setEndTime(e.target.value)}
+          />
         </div>
-      </main>
+
+        {/* horizon slider */}
+        <div>
+          <label>
+            <span>Forecast Horizon: </span>
+            <span>{horizonHours}h</span>
+          </label>
+          <input type="range" 
+          min="0"
+          max="48"
+          value={horizonHours}
+          onChange={(e) => setHorizonHours(Number(e.target.value))}
+          />
+        </div>
+      </div>
+
+      {/* charts section  */}
+      <div className="h-[500px] w-full border border-gray-100 shadow-sm rounded-lg p-4">
+        {loading ? (
+          <div>Loading Grid data...</div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={windData} margin={{top: 20, right: 30, left: 20, bottom: 20}}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+              <XAxis
+              dataKey="displayTime"
+              tick={{fill: '#6b7280', fontSize: 12}}
+              tickMargin={10}
+              />
+              <YAxis
+              tick={{fill: '#6b7280', fontSize: 12}}
+              label={{value: 'Power (MW)', angle: -90, position: 'insideLeft', fill: '#374151'}}
+              />
+              <Tooltip />
+              <Legend verticalAlign="top" height={36} />
+
+              {/* actual generation */}
+              <Line
+              type="monotone"
+              dataKey="actualGeneration"
+              name="Actual"
+              stroke="#2563eb"
+              strokeWidth={2}
+              dot={false}
+              />
+
+              {/* forecast generation  */}
+              <Line
+              type="monotone"
+              dataKey="forecastGeneration"
+              name="Forecast"
+              stroke="#16a34a"
+              strokeWidth={2}
+              dot={false}
+              connectNulls={true}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+
+        )}
+      </div>
     </div>
-  );
+    </>
+  )
 }
