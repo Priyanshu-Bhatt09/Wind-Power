@@ -38,30 +38,40 @@ export default function WindForecastDashboard() {
 
   return(
     <>
-    <div className="min-h-screen bg-white p-8 font-sans">
+    <div className="min-h-screen bg-black
+    flex items-center justify-center
+    border-2">
+      <div className="border-2 min-h-screen
+      my-40 lg:my-20 lg:w-[70vw]
+      ">
       {/* top controls  */}
-      <div>
+      <div className="flex flex-row gap-2 lg:gap-4 m-2 border-2
+      w-[95vw] lg:w-[69vw] md:w-[70vw] sm:w-[70vw]
+      
+      ">
         {/* start time  */}
-        <div>
-          <label>Start Time:</label>
+        <div className="border-2 flex items-start lg:flex-col">
+          <label className="text-white text-sm lg:text-xl m-1">Start Time:</label>
           <input type="date"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
+          className="text-white text-xs lg:text-sm p-1 bg-gray-900 rounded-sm shadow-2xl outline-none m-1"
           />
         </div>
 
         {/* end time  */}
-        <div>
-          <label>End Time:</label>
+        <div className="border-2 flex items-start lg:flex-col">
+          <label className="text-white text-sm lg:text-xl m-1">End Time:</label>
           <input type="date"
           value={endTime} 
           onChange={(e) => setEndTime(e.target.value)}
+          className="text-white text-xs lg:text-sm p-1 bg-gray-900 rounded-sm shadow-2xl outline-none m-1"
           />
         </div>
 
         {/* horizon slider */}
-        <div>
-          <label>
+        <div className="border-2 flex items-start lg:flex-col">
+          <label className="text-white text-sm lg:text-xl m-1 ">
             <span>Forecast Horizon: </span>
             <span>{horizonHours}h</span>
           </label>
@@ -70,17 +80,21 @@ export default function WindForecastDashboard() {
           max="48"
           value={horizonHours}
           onChange={(e) => setHorizonHours(Number(e.target.value))}
+          className="m-1 rounded-sm w-30 lg:w-45"
           />
         </div>
       </div>
 
       {/* charts section  */}
-      <div className="h-[500px] w-full border border-gray-100 shadow-sm rounded-lg p-4">
+      <div className="h-[50vh] w-[95vw] lg:h-[70vh] lg:w-[69vw]
+      border border-gray-100 rounded-lg mx-2
+      
+      ">
         {loading ? (
-          <div>Loading Grid data...</div>
+          <div className="text-center font-light">Loading Grid data...</div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={windData} margin={{top: 20, right: 30, left: 20, bottom: 20}}>
+            <LineChart data={windData} margin={{top: 20, right: 20, left: 5, bottom: 20}}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
               <XAxis
               dataKey="displayTime"
@@ -91,8 +105,15 @@ export default function WindForecastDashboard() {
               tick={{fill: '#6b7280', fontSize: 12}}
               label={{value: 'Power (MW)', angle: -90, position: 'insideLeft', fill: '#374151'}}
               />
-              <Tooltip />
-              <Legend verticalAlign="top" height={36} />
+              <Tooltip
+              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', backgroundColor: 'black'}}
+              labelStyle={{ 
+              color: 'white', // This makes the timestamp text dark gray
+              fontWeight: 'thin',
+              marginBottom: '2px'
+              }}
+              />
+              <Legend verticalAlign="top" height={30} />
 
               {/* actual generation */}
               <Line
@@ -119,6 +140,8 @@ export default function WindForecastDashboard() {
 
         )}
       </div>
+      </div>
+      
     </div>
     </>
   )
