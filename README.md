@@ -1,5 +1,11 @@
 This project consists of a full-stack forecast monitoring application and a comprehensive data analysis of the Elexon wind power generation dataset.
 
+## Live Links
+*Note - when opening the links it will take few seconds to load the data because the backend is deployed in render*
+
+**Frontend Application (Verce):** https://wind-power-six.vercel.app
+**Backend Application (Render):** https://wind-power-ae59.onrender.com
+
 ![Project Screenshot](img/wind-forecast.png)
 
 ## AI Usage
