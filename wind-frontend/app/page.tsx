@@ -40,18 +40,18 @@ export default function WindForecastDashboard() {
     <>
     <div className="min-h-screen bg-black
     flex items-center justify-center
-    border-2">
-      <div className="border-2 min-h-screen
-      my-40 lg:my-20 lg:w-[70vw]
+    ">
+      <div className=" min-h-screen
+      my-40 lg:my-20 lg:w-[70vw] md:w-[85vw] md:my-20 sm:my-20
       ">
       {/* top controls  */}
-      <div className="flex flex-row gap-2 lg:gap-4 m-2 border-2
+      <div className="flex flex-row gap-2 lg:gap-4 m-2 
       w-[95vw] lg:w-[69vw] md:w-[70vw] sm:w-[70vw]
       
       ">
         {/* start time  */}
-        <div className="border-2 flex items-start lg:flex-col">
-          <label className="text-white text-sm lg:text-xl m-1">Start Time:</label>
+        <div className=" lg:flex lg:items-start lg:flex-col">
+          <label className="text-white text-sm lg:text-xl lg:m-1">Start Time:</label>
           <input type="date"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
@@ -60,7 +60,7 @@ export default function WindForecastDashboard() {
         </div>
 
         {/* end time  */}
-        <div className="border-2 flex items-start lg:flex-col">
+        <div className=" lg:flex lg:items-start lg:flex-col">
           <label className="text-white text-sm lg:text-xl m-1">End Time:</label>
           <input type="date"
           value={endTime} 
@@ -70,7 +70,7 @@ export default function WindForecastDashboard() {
         </div>
 
         {/* horizon slider */}
-        <div className="border-2 flex items-start lg:flex-col">
+        <div className=" lg:flex lg:items-start lg:flex-col">
           <label className="text-white text-sm lg:text-xl m-1 ">
             <span>Forecast Horizon: </span>
             <span>{horizonHours}h</span>
@@ -86,7 +86,7 @@ export default function WindForecastDashboard() {
       </div>
 
       {/* charts section  */}
-      <div className="h-[50vh] w-[95vw] lg:h-[70vh] lg:w-[69vw]
+      <div className="h-[50vh] w-[95vw] lg:h-[70vh] lg:w-[69vw] md:w-[83vw] md:h-[70vh] sm:h-[70vh]
       border border-gray-100 rounded-lg mx-2
       
       ">
