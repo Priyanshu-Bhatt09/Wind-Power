@@ -2,7 +2,7 @@ This project consists of a full-stack forecast monitoring application and a comp
 
 ![Project Screenshot](img/wind-forecast.png)
 
-##AI Usage
+## AI Usage
 I utilized AI assistance (Gemini) during the development of the web application. Specifically, AI was used for:
 1. Debugging React rendering issues (specifically configuring Recharts to handle missing 30-minute intervals using `connectNulls`).
 2. Assisting with the timezone conversion logic (UTC to IST) on the frontend.
