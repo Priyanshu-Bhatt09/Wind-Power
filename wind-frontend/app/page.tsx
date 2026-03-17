@@ -10,12 +10,15 @@ export default function WindForecastDashboard() {
   const [windData, setWindData] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // This tells Next.js: Use the live URL if it exists, otherwise fall back to localhost for local testing
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
   //fetch data
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try{
-        const response = await fetch(`http://localhost:8080/api/wind-data?startTime=${startTime}&endTime=${endTime}&forecastHorizonHours=${horizonHours}`);
+        const response = await fetch(`${API_BASE_URL}/api/wind-data?startTime=${startTime}&endTime=${endTime}&forecastHorizonHours=${horizonHours}`);
         const data = await response.json();
         console.log("Data", data);
 
