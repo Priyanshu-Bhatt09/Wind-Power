@@ -8,24 +8,24 @@ This project consists of a full-stack forecast monitoring application and a comp
 
 ![Project Screenshot](img/wind-forecast.png)
 
-\`\`\`text
-reint-swe-challenge/
+```text
+Wind-Power/
 │
-├── wind-frontend/               # Next.js & React web application
-│   ├── src/app/            # Main application pages and routing, contains the main logic of the app
-│   ├── package.json        # Frontend dependencies (Recharts, Tailwind)
+├── wind-frontend/                # Next.js & React web application
+│   ├── src/app/                 # Main application pages and routing
+│   ├── package.json             # Frontend dependencies
 │   └── ...
 │
 ├── wind-backend/                # Java Spring Boot REST API
-│   ├── src/main/java/.../  # Controllers, Services, Models, and DTOs
-│   ├── pom.xml             # Maven dependencies
+│   ├── src/main/java/...        # Controllers, Services, Models, DTOs
+│   ├── pom.xml                  # Maven dependencies
 │   └── ...
 │
-└── analysis/               # Python Data Analysis
-    ├── Wind_power_analysis.ipynb  # Jupyter Notebook with error & reliability analysis
-    ├── data.py         # Python script used to fetch CSVs from Elexon API
-    └── *.csv                      # Raw datasets for January 2024
-\`\`\`
+└── analysis/                    # Python Data Analysis
+    ├── Wind_power_analysis.ipynb
+    ├── data.py
+    └── *.csv
+```
 
 ## AI Usage
 I utilized AI assistance (Gemini) during the development of the web application. Specifically, AI was used for:
