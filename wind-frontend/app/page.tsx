@@ -48,11 +48,13 @@ export default function WindForecastDashboard() {
       my-40 lg:my-20 lg:w-[70vw] md:w-[85vw] md:my-20 sm:my-20
       ">
       {/* top controls  */}
+      <h5 className="text-red-600 font-serif text-sm"> *Opening this page takes few seconds, because the api fetching takes time on render.</h5>
+        {/* start time  */}
       <div className="flex flex-row gap-2 lg:gap-4 m-2 
       w-[95vw] lg:w-[69vw] md:w-[70vw] sm:w-[70vw]
       
       ">
-        {/* start time  */}
+        
         <div className=" lg:flex lg:items-start lg:flex-col">
           <label className="text-white text-sm lg:text-xl lg:m-1">Start Time:</label>
           <input type="date"
@@ -136,7 +138,7 @@ export default function WindForecastDashboard() {
               stroke="#16a34a"
               strokeWidth={2}
               dot={false}
-              connectNulls={true}
+              connectNulls={true} //this prevents breaking the line graph when the data is null
               />
             </LineChart>
           </ResponsiveContainer>
